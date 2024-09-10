@@ -22,7 +22,8 @@ jobs:
 
     - name: Sync toolchains
       run: |
-        mkdir -p toolchain/
+        mkdir -p toolchain/aarch64-linux-android-4.9/
+        git clone --depth=1 -b android-10.0.0_r45 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 toolchain/aarch64-linux-android-4.9/
         wget -O clang-r383902.tar.gz https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/3857008389202edac32d57008bb8c99d2c957f9d/clang-r383902.tar.gz
         tar -xvzf clang-r383902.tar.gz -C ./toolchain/
 
@@ -38,9 +39,9 @@ jobs:
     - name: Build kernel
 
       run: |
-        export CROSS_COMPILE=toolchain/clang-r383902/bin/aarch64-linux-gnu-
+        export CROSS_COMPILE=toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-androidkernel-
         export CC=toolchain/clang-r383902/bin/clang
-        export CLANG_TRIPLE=toolchain/clang-r383902/bin/aarch64-linux-gnu-
+        export CLANG_TRIPLE=toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-androidkernel-
         export ANDROID_MAJOR_VERSION=r
         export ARCH=arm64
         make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y a34x_defconfig
