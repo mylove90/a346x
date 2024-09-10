@@ -24,8 +24,8 @@ jobs:
       run: |
         mkdir -p toolchain/aarch64-linux-android-4.9/
         git clone --depth=1 -b android-14.0.0_r0.91 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 toolchain/aarch64-linux-android-4.9/
-        wget -O clang-r383902.tar.gz https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/3857008389202edac32d57008bb8c99d2c957f9d/clang-r383902.tar.gz
-        tar -xvzf clang-r383902.tar.gz -C ./toolchain/
+        wget -O clang-r510928.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/android-14.0.0_r74/clang-r510928.tar.gz
+        tar -xvzf clang-r510928.tar.gz -C ./toolchain/
 
     - name: Sync Anykernel3
       run: |
@@ -40,7 +40,7 @@ jobs:
 
       run: |
         export CROSS_COMPILE=../toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-        export CC=../toolchain/clang-r383902/bin/clang
+        export CC=../toolchain/clang-r510928/bin/clang
         export ANDROID_MAJOR_VERSION=r
         export ARCH=arm64
         make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y a34x_defconfig
