@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v4.1.7
       with:
         repository: mylove90/a34x
-        branch: A346BXXU8CXG7
+        ref: A346BXXU8CXG7
 
     - name: Sync toolchains
       run: |
