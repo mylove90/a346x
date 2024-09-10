@@ -17,7 +17,7 @@ jobs:
     - name: Checkout main repository
       uses: actions/checkout@v4.1.7
       with:
-        repository: mylove90/a34x
+        repository: mylove90/a346x
         ref: A346BXXU8CXG7
 
     - name: Sync toolchains
