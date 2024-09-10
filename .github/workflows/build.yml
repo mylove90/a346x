@@ -39,7 +39,7 @@ jobs:
     - name: Build kernel
 
       run: |
-        export CROSS_COMPILE=toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-androidkernel-
+        export CROSS_COMPILE=toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-android-
         export CC=toolchain/clang-r383902/bin/clang
         export ANDROID_MAJOR_VERSION=r
         export ARCH=arm64
