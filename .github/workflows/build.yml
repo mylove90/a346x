@@ -18,12 +18,13 @@ jobs:
       uses: actions/checkout@v4.1.7
       with:
         repository: mylove90/a34x
+        branch: A346BXXU8CXG7
 
     - name: Sync toolchains
       run: |
-        mkdir -p toolchain/clang-r383902/
-        wget -O clang.tar.gz https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/3857008389202edac32d57008bb8c99d2c957f9d/clang-r383902.tar.gz
-        tar -xvzf clang.tar.gz -C ./toolchain/clang-r383902/
+        mkdir -p toolchain/
+        wget -O clang-r383902.tar.gz https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/3857008389202edac32d57008bb8c99d2c957f9d/clang-r383902.tar.gz
+        tar -xvzf clang-r383902.tar.gz -C ./toolchain/
 
     - name: Sync Anykernel3
       run: |
@@ -37,7 +38,9 @@ jobs:
     - name: Build kernel
 
       run: |
-        cd Kernel_a346b
+        export CROSS_COMPILE=toolchain/clang-r383902/bin/aarch64-linux-gnu-
+        export CC=toolchain/clang-r383902/bin/clang
+        export CLANG_TRIPLE=toolchain/clang-r383902/bin/aarch64-linux-gnu-
         export ANDROID_MAJOR_VERSION=r
         export ARCH=arm64
         make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y a34x_defconfig
@@ -46,9 +49,6 @@ jobs:
     - name: Pack AnyKernel3 ZIP
       run: |
         cp -f /home/runner/work/M325FV/M325FV/out/arch/arm64/boot/Image.gz-dtb ./AnyKernel3/
-#        cp -f /home/runner/work/M325FV/M325FV/out/net/bridge/br_netfilter.ko ./AnyKernel3/modules/system/vendor/lib/modules/
-#        cp -f /home/runner/work/M325FV/M325FV/out/net/ipv4/tcp_htcp.ko ./AnyKernel3/modules/system/vendor/lib/modules/
-#        cp -f /home/runner/work/M325FV/M325FV/out/net/ipv4/tcp_westwood.ko ./AnyKernel3/modules/system/vendor/lib/modules/
         cd AnyKernel3/
         rm -rf .git .github README.md
         zip -r9 a346b-kernel.zip *
