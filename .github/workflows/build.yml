@@ -1,0 +1,68 @@
+name: Build Kernel
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@v10
+      with:
+        swap-size-mb: 32768
+
+    - name: Checkout main repository
+      uses: actions/checkout@v4.1.7
+      with:
+        repository: mylove90/a34x
+
+    - name: Sync toolchains
+      run: |
+        mkdir -p toolchain/clang-r383902/
+        wget -O clang.tar.gz https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/3857008389202edac32d57008bb8c99d2c957f9d/clang-r383902.tar.gz
+        tar -xvzf clang.tar.gz -C ./toolchain/clang-r383902/
+
+    - name: Sync Anykernel3
+      run: |
+        git clone --depth=1 --branch M32 https://github.com/mylove90/AnyKernel3 AnyKernel3
+
+    - name: Set up build environment
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential bc gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi libssl-dev libfl-dev curl git ftp lftp wget libarchive-tools ccache python2 python2-dev zip unzip tar gzip bzip2 rar unrar
+
+    - name: Build kernel
+
+      run: |
+        cd Kernel_a346b
+        export ANDROID_MAJOR_VERSION=r
+        export ARCH=arm64
+        make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y a34x_defconfig
+        make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+
+    - name: Pack AnyKernel3 ZIP
+      run: |
+        cp -f /home/runner/work/M325FV/M325FV/out/arch/arm64/boot/Image.gz-dtb ./AnyKernel3/
+#        cp -f /home/runner/work/M325FV/M325FV/out/net/bridge/br_netfilter.ko ./AnyKernel3/modules/system/vendor/lib/modules/
+#        cp -f /home/runner/work/M325FV/M325FV/out/net/ipv4/tcp_htcp.ko ./AnyKernel3/modules/system/vendor/lib/modules/
+#        cp -f /home/runner/work/M325FV/M325FV/out/net/ipv4/tcp_westwood.ko ./AnyKernel3/modules/system/vendor/lib/modules/
+        cd AnyKernel3/
+        rm -rf .git .github README.md
+        zip -r9 a346b-kernel.zip *
+
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          AnyKernel3/a346b-kernel.zip
+        name: A34-${{ github.run_id }}
+        tag_name: ${{ github.run_id }}
+        body: |
+          Version: A14
+          Device: A34
+          Target: a346b-kernel.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
